@@ -18,7 +18,7 @@ app.UseHttpsRedirection();
 app.MapPost("/seed-concert", async (IFakerService fakerService) =>
 {
 	int createdItems = await fakerService.SeedConcertDataAsync();
-	return Results.Created("/seed", $"{createdItems} adet data oluþturuldu.");
+	return Results.Created("/seed-concert", $"{createdItems} adet data oluþturuldu.");
 });
 
 app.MapOpenApi();
