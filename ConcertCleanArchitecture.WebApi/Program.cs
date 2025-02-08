@@ -2,9 +2,15 @@ using Scalar.AspNetCore;
 using ConcertCleanArchitecture.Infrastructure;
 using ConcertCleanArchitecture.Application;
 using ConcertCleanArchitecture.Application.Interfaces;
+using Microsoft.AspNetCore.OData;
 
 
 var builder = WebApplication.CreateBuilder(args);
+
+builder.Services
+	.AddControllers()
+	.AddOData(opt => opt.EnableQueryFeatures());
+
 builder.Services.AddOpenApi();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services
@@ -23,5 +29,6 @@ app.MapPost("/seed-concert", async (IFakerService fakerService) =>
 
 app.MapOpenApi();
 app.MapScalarApiReference();
+app.MapControllers();
 
 await app.RunAsync();

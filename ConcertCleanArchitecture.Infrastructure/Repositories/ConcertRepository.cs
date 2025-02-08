@@ -11,4 +11,9 @@ internal class ConcertRepository(AppDbContext context) : Repository<Concert>(con
 	{
 		await _context.Concerts.AddRangeAsync(concertList);
 	}
+
+	public IQueryable<Concert> GetConcerts()
+	{
+		return _context.Concerts;
+	}
 }

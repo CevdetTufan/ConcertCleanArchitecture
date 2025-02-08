@@ -27,4 +27,10 @@ internal class ConcertService(IUnitOfWork uow) : IConcertService
 
 		return addedConcert.Adapt<ConcertAddDto>();
 	}
+
+	public IQueryable<ConcertQueryDto> GetConcerts()
+	{
+		var concerts = _uow.ConcertRepository.GetConcerts();
+		return concerts.ProjectToType<ConcertQueryDto>();
+	}
 }
