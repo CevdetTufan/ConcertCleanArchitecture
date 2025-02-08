@@ -17,7 +17,7 @@ internal class ConcertService(IUnitOfWork uow) : IConcertService
 		var validation = new ConcertAddDtoValidator().Validate(concertAddDto);
 		if (!validation.IsValid)
 		{
-			throw new ValidationException(string.Join(",", validation.Errors));
+			throw new ValidationException(string.Join(", ", validation.Errors));
 		}
 
 		var concert = concertAddDto.Adapt<Concert>();
