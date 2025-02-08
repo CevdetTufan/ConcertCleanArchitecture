@@ -6,4 +6,9 @@ namespace ConcertCleanArchitecture.Infrastructure.Repositories;
 
 internal class ConcertRepository(AppDbContext context) : Repository<Concert>(context), IConcertRepository
 {
+	private readonly AppDbContext _context = context;
+	public async Task AddConcertRangeAsync(List<Concert> concertList)
+	{
+		await _context.Concerts.AddRangeAsync(concertList);
+	}
 }
