@@ -24,4 +24,4 @@ app.MapPost("/seed-concert", async (IFakerService fakerService) =>
 app.MapOpenApi();
 app.MapScalarApiReference();
 
-app.Run();
+await app.RunAsync();
