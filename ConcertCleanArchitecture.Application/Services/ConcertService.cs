@@ -28,9 +28,45 @@ internal class ConcertService(IUnitOfWork uow) : IConcertService
 		return addedConcert.Adapt<ConcertAddDto>();
 	}
 
+	public async Task MakeReservation(ReservationMakeDto reservation)
+	{
+		var validation = new ReservationMakeDtoValidator().Validate(reservation);
+
+		if (!validation.IsValid)
+		{
+			throw new ValidationException(string.Join(", ", validation.Errors));
+		}
+
+		var concert = await _uow.ConcertRepository.GetByIdAsync(reservation.ConcertId);
+		if (concert is null)
+		{
+			throw new ValidationException("Concert not found");
+		}
+
+		var seat = await _uow.SeatRepository.GetByIdAsync(reservation.SeatId);
+		if (seat is null)
+		{
+			throw new ValidationException("Seat not found");
+		}
+		if (seat.IsReserved)
+		{
+			throw new ValidationException("Seat is already reserved");
+		}
+		seat.IsReserved = true;
+		_uow.SeatRepository.Update(seat);
+		await _uow.CompleteAsync();
+	}
+
 	public IQueryable<ConcertQueryDto> GetConcerts()
 	{
 		var concerts = _uow.ConcertRepository.GetConcerts();
 		return concerts.ProjectToType<ConcertQueryDto>();
+	}
+
+	public async Task<List<SeatDto>> GetSeatsByConcertId(Guid concertId)
+	{
+		var seats = await _uow.SeatRepository.GetSeatsByConcertIdAsync(concertId);
+
+		return seats.Adapt<List<SeatDto>>();
 	}
 }
