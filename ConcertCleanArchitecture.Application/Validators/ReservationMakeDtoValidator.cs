@@ -7,7 +7,7 @@ internal class ReservationMakeDtoValidator : AbstractValidator<ReservationMakeDt
 {
 	public ReservationMakeDtoValidator()
 	{
-		RuleFor(x => x.ConcertId).NotEmpty();
+		RuleFor(x => x.ConcertId).NotEmpty().WithMessage("Boş olmamalı");
 		RuleFor(x => x.SeatId).NotEmpty();
 	}
 }

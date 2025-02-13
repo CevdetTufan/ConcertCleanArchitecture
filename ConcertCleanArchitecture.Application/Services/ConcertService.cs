@@ -40,13 +40,18 @@ internal class ConcertService(IUnitOfWork uow) : IConcertService
 		var concert = await _uow.ConcertRepository.GetByIdAsync(reservation.ConcertId);
 		if (concert is null)
 		{
-			throw new ValidationException("Concert not found");
+			throw new KeyNotFoundException("Concert not found");
+		}
+
+		if (concert.Date.ToUniversalTime() < DateTime.UtcNow)
+		{
+			throw new ValidationException("Concert is already finished");
 		}
 
 		var seat = await _uow.SeatRepository.GetByIdAsync(reservation.SeatId);
 		if (seat is null)
 		{
-			throw new ValidationException("Seat not found");
+			throw new KeyNotFoundException("Seat not found");
 		}
 		if (seat.IsReserved)
 		{

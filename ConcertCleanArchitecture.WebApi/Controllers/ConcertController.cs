@@ -9,14 +9,9 @@ namespace ConcertCleanArchitecture.WebApi.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class ConcertController : ODataController
+public class ConcertController(IConcertService concertService) : ODataController
 {
-	private readonly IConcertService _concertService;
-
-	public ConcertController(IConcertService concertService)
-	{
-		_concertService = concertService;
-	}
+	private readonly IConcertService _concertService = concertService;
 
 	[HttpGet("GetConcerts")]
 	[EnableQuery(PageSize = 10, AllowedQueryOptions = AllowedQueryOptions.All)]
@@ -31,7 +26,7 @@ public class ConcertController : ODataController
 	{
 		var seats = await _concertService.GetSeatsByConcertId(concertId);
 
-		if (seats is null)
+		if (seats is [])
 		{
 			return NotFound();
 		}

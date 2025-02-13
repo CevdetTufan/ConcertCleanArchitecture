@@ -2,6 +2,7 @@ using ConcertCleanArchitecture.Application;
 using ConcertCleanArchitecture.Application.Dtos;
 using ConcertCleanArchitecture.Application.Interfaces;
 using ConcertCleanArchitecture.Infrastructure;
+using ConcertCleanArchitecture.WebApi.Middlewares;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
 using Scalar.AspNetCore;
@@ -28,6 +29,8 @@ builder.Services
 	.AddApplication();
 
 var app = builder.Build();
+
+app.UseMiddleware<ExceptionMiddleware>();
 
 app.UseHttpsRedirection();
 
