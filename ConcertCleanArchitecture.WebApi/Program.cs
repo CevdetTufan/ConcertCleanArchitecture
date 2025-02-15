@@ -2,6 +2,7 @@ using ConcertCleanArchitecture.Application;
 using ConcertCleanArchitecture.Application.Dtos;
 using ConcertCleanArchitecture.Application.Interfaces;
 using ConcertCleanArchitecture.Infrastructure;
+using ConcertCleanArchitecture.WebApi.Logging;
 using ConcertCleanArchitecture.WebApi.Middlewares;
 using Microsoft.AspNetCore.OData;
 using Microsoft.OData.ModelBuilder;
@@ -27,6 +28,11 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services
 	.AddInfrastructure(builder.Configuration)
 	.AddApplication();
+
+
+builder.Services.AddSingleton<ILoggerProvider>(provider =>
+	new FileLoggerProvider(provider.GetRequiredService<IConfiguration>()));
+builder.Services.AddLogging();
 
 var app = builder.Build();
 
