@@ -14,6 +14,7 @@ public static class DependencyInjection
 
 		services.AddScoped<IConcertService, ConcertService>();
 		services.AddScoped<IFakerService, FakerService>();
+		services.AddScoped<IAuthService, AuthService>();
 
 		return services;
 	}

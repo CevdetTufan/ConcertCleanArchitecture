@@ -1,15 +1,38 @@
 ﻿using ConcertCleanArchitecture.Domain.Entities;
+using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
 namespace ConcertCleanArchitecture.Infrastructure.Persistence;
-internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(options)
+internal class AppDbContext(DbContextOptions<AppDbContext> options) : IdentityDbContext<IdentityUser, IdentityRole, string>(options)
 {
-	public DbSet<Concert> Concerts { get; set; } 
+	//AppUser
+	public DbSet<Permission> Permissions { get; set; }
+	public DbSet<RolePermission> RolePermissions { get; set; }
+
+	//Concert
+	public DbSet<Concert> Concerts { get; set; }
 	public DbSet<Seat> Seats { get; set; }
 
-	protected override void OnModelCreating(ModelBuilder modelBuilder)
+	protected override void OnModelCreating(ModelBuilder builder)
 	{
-		modelBuilder.Entity<Concert>(entity =>
+		base.OnModelCreating(builder);
+
+		// Define Many-to-Many Relationship between Roles and Permissions
+		builder.Entity<RolePermission>()
+			.HasKey(rp => new { rp.RoleId, rp.PermissionId });
+
+		builder.Entity<RolePermission>()
+			.HasOne(rp => rp.Role)
+			.WithMany()
+			.HasForeignKey(rp => rp.RoleId);
+
+		builder.Entity<RolePermission>()
+			.HasOne(rp => rp.Permission)
+			.WithMany()
+			.HasForeignKey(rp => rp.PermissionId);
+
+		builder.Entity<Concert>(entity =>
 		{
 			entity.HasKey(e => e.Id);
 
@@ -38,7 +61,7 @@ internal class AppDbContext(DbContextOptions<AppDbContext> options) : DbContext(
 			entity.HasMany(e => e.Seats);
 		});
 
-		modelBuilder.Entity<Seat>(entity =>
+		builder.Entity<Seat>(entity =>
 		{
 			entity.HasKey(e => e.Id);
 

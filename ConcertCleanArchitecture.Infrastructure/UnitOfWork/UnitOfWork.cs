@@ -12,6 +12,8 @@ internal class UnitOfWork(AppDbContext context) : IUnitOfWork, IDisposable
 
 	public ISeatRepository SeatRepository => new SeatRepository(_context);
 
+	public IRolePermissionRepository RolePermissionRepository => new RolePermissionRepository(_context);
+
 	public async Task<int> CompleteAsync()
 	{
 		return await _context.SaveChangesAsync();
