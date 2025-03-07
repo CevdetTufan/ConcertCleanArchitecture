@@ -1,4 +1,4 @@
-﻿using ConcertCleanArchitecture.Application.Dtos;
+﻿using ConcertCleanArchitecture.Application.Dtos.Concert;
 using ConcertCleanArchitecture.Application.Interfaces;
 using ConcertCleanArchitecture.Application.Validators;
 using ConcertCleanArchitecture.Domain.Entities;

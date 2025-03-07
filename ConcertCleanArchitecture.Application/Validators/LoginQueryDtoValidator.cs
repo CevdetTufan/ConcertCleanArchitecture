@@ -1,4 +1,4 @@
-﻿using ConcertCleanArchitecture.Application.Dtos;
+﻿using ConcertCleanArchitecture.Application.Dtos.Auth;
 using FluentValidation;
 
 namespace ConcertCleanArchitecture.Application.Validators;

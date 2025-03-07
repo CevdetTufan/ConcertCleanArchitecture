@@ -1,4 +1,5 @@
-﻿using ConcertCleanArchitecture.Application.Interfaces;
+﻿using ConcertCleanArchitecture.Application.Dtos.Auth;
+using ConcertCleanArchitecture.Application.Interfaces;
 using ConcertCleanArchitecture.Domain.Entities;
 using ConcertCleanArchitecture.Domain.Interfaces;
 using Microsoft.AspNetCore.Identity;
@@ -12,11 +13,11 @@ namespace ConcertCleanArchitecture.Application.Services;
 internal class AuthService : IAuthService
 {
 	private readonly UserManager<ApplicationUser> _userManager;
-	private readonly RoleManager<IdentityRole> _roleManager;
+	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
 	private readonly IUnitOfWork _uow;
 	private readonly IConfiguration _configuration;
 
-	public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager, IConfiguration configuration, IUnitOfWork uow)
+	public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration, IUnitOfWork uow)
 	{
 		_userManager = userManager;
 		_roleManager = roleManager;
@@ -39,7 +40,7 @@ internal class AuthService : IAuthService
 		var userRoles = await _userManager.GetRolesAsync(user);
 		var claims = new List<Claim>
 							{
-								new(JwtRegisteredClaimNames.Sub, user.Id),
+								new(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
 								new(JwtRegisteredClaimNames.Email, user.Email!),
 								new(JwtRegisteredClaimNames.Jti, Guid.NewGuid().ToString())
 							};
@@ -86,7 +87,7 @@ internal class AuthService : IAuthService
 		{
 			if (!await _roleManager.RoleExistsAsync(role))
 			{
-				await _roleManager.CreateAsync(new IdentityRole(role));
+				await _roleManager.CreateAsync(new IdentityRole<Guid>(role));
 			}
 		}
 
@@ -110,5 +111,16 @@ internal class AuthService : IAuthService
 		}
 
 		return await _uow.CompleteAsync();
+	}
+
+	public async Task<IdentityResult> RegisterAsync(RegisterQueryDto model)
+	{
+		var idendityResult = await _userManager.CreateAsync(new ApplicationUser
+		{
+			Email = model.Email,
+			UserName = model.Email
+		}, model.Password);
+
+		return idendityResult;
 	}
 }

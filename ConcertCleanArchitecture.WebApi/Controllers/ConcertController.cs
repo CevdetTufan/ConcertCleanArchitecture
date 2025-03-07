@@ -1,4 +1,4 @@
-﻿using ConcertCleanArchitecture.Application.Dtos;
+﻿using ConcertCleanArchitecture.Application.Dtos.Concert;
 using ConcertCleanArchitecture.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.OData.Query;

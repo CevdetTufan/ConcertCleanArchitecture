@@ -1,6 +1,8 @@
-﻿using ConcertCleanArchitecture.Domain.Interfaces;
+﻿using ConcertCleanArchitecture.Domain.Entities;
+using ConcertCleanArchitecture.Domain.Interfaces;
 using ConcertCleanArchitecture.Infrastructure.Persistence;
 using ConcertCleanArchitecture.Infrastructure.Repositories;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -12,6 +14,11 @@ public static class DependencyInjection
 	{
 		string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 		services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
+
+		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => options.SignIn.RequireConfirmedAccount = true)
+			.AddEntityFrameworkStores<AppDbContext>()
+			.AddDefaultTokenProviders();
+		
 
 		services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 		services.AddScoped<IConcertRepository, ConcertRepository>();

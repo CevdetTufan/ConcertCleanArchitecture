@@ -1,9 +1,7 @@
-﻿
-
-using ConcertCleanArchitecture.Domain.Abstraction;
+﻿using Microsoft.AspNetCore.Identity;
 
 namespace ConcertCleanArchitecture.Domain.Entities;
-public class ApplicationUser : BaseUserEntity
+public class ApplicationUser : IdentityUser<Guid>
 {
 	public string FullName { get; set; } = default!;
 }

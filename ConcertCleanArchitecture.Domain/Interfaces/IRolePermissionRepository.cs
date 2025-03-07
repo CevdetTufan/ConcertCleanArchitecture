@@ -1,5 +1,5 @@
 ﻿namespace ConcertCleanArchitecture.Domain.Interfaces;
 public interface IRolePermissionRepository
 {
-	Task<List<string>> GetPermissionsByRoleIdAsync(string roleId);
+	Task<List<string>> GetPermissionsByRoleIdAsync(Guid roleId);
 }

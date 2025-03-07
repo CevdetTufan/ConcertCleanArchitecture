@@ -1,4 +1,4 @@
-﻿namespace ConcertCleanArchitecture.Application.Dtos;
+﻿namespace ConcertCleanArchitecture.Application.Dtos.Concert;
 
 public class SeatAddDto
 {

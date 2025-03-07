@@ -1,5 +1,5 @@
 using ConcertCleanArchitecture.Application;
-using ConcertCleanArchitecture.Application.Dtos;
+using ConcertCleanArchitecture.Application.Dtos.Concert;
 using ConcertCleanArchitecture.Application.Interfaces;
 using ConcertCleanArchitecture.Infrastructure;
 using ConcertCleanArchitecture.WebApi.Logging;

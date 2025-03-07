@@ -1,4 +1,4 @@
-﻿using ConcertCleanArchitecture.Application.Dtos;
+﻿using ConcertCleanArchitecture.Application.Dtos.Concert;
 
 namespace ConcertCleanArchitecture.Application.Interfaces;
 public interface IConcertService

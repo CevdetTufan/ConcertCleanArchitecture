@@ -8,7 +8,7 @@ internal class RolePermissionRepository(AppDbContext context) : Repository<RoleP
 {
 	private readonly AppDbContext _context = context;
 
-	public async Task<List<string>> GetPermissionsByRoleIdAsync(string roleId)
+	public async Task<List<string>> GetPermissionsByRoleIdAsync(Guid roleId)
 	{
 		var rolePermissions = await _context.RolePermissions
 				.Where(rp => rp.RoleId == roleId)
