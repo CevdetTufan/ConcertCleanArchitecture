@@ -2,6 +2,7 @@
 using ConcertCleanArchitecture.Application.Interfaces;
 using ConcertCleanArchitecture.Domain.Entities;
 using ConcertCleanArchitecture.Domain.Interfaces;
+using Mapster;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.Extensions.Configuration;
 using Microsoft.IdentityModel.Tokens;
@@ -115,12 +116,59 @@ internal class AuthService : IAuthService
 
 	public async Task<IdentityResult> RegisterAsync(RegisterQueryDto model)
 	{
-		var idendityResult = await _userManager.CreateAsync(new ApplicationUser
-		{
-			Email = model.Email,
-			UserName = model.Email
-		}, model.Password);
+		var appUserModel = model.Adapt<ApplicationUser>();
+
+		var idendityResult = await _userManager.CreateAsync(appUserModel, model.Password);
 
 		return idendityResult;
+	}
+
+	public async Task<IdentityResult> ChangePassword(ChangePasswordDto model)
+	{
+		var user = await _userManager.FindByIdAsync(model.UserId.ToString());
+		if (user is null)
+		{
+			throw new KeyNotFoundException("User not found");
+		}
+
+		var result = await _userManager.ChangePasswordAsync(user, model.CurrentPassword, model.NewPassword);
+
+		return result;
+	}
+
+	public async Task<string> ForgotPassword(ForgotPasswordDto model)
+	{
+		var user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
+
+		if (user is null)
+		{
+			user = await _userManager.FindByNameAsync(model.UserNameOrEmail);
+		}
+
+		if (user is null)
+		{
+			throw new KeyNotFoundException("User not found");
+		}
+
+		var token = await _userManager.GeneratePasswordResetTokenAsync(user);
+
+		return token;
+	}
+
+	public async Task<IdentityResult> ResetPassword(ResetPasswordDto model)
+	{
+		var user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
+		if (user is null)
+		{
+			user = await _userManager.FindByNameAsync(model.UserNameOrEmail);
+		}
+
+		if (user is null)
+		{
+			throw new KeyNotFoundException("User not found");
+		}
+
+		var result = await _userManager.ResetPasswordAsync(user, model.Token, model.NewPassword);
+		return result;
 	}
 }

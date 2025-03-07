@@ -15,10 +15,16 @@ public static class DependencyInjection
 		string connectionString = configuration.GetConnectionString("DefaultConnection")!;
 		services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
-		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options => options.SignIn.RequireConfirmedAccount = true)
-			.AddEntityFrameworkStores<AppDbContext>()
-			.AddDefaultTokenProviders();
-		
+		services.AddIdentity<ApplicationUser, IdentityRole<Guid>>(options =>
+		{
+			options.Password.RequireNonAlphanumeric = false;
+			options.Password.RequireUppercase = false;
+			options.Password.RequireLowercase = false;
+			options.Password.RequireDigit = false;
+			options.Password.RequiredLength = 6;
+		})
+		.AddEntityFrameworkStores<AppDbContext>()
+		.AddDefaultTokenProviders();
 
 		services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 		services.AddScoped<IConcertRepository, ConcertRepository>();
