@@ -22,6 +22,11 @@ public static class DependencyInjection
 			options.Password.RequireLowercase = false;
 			options.Password.RequireDigit = false;
 			options.Password.RequiredLength = 6;
+
+			options.SignIn.RequireConfirmedEmail = true;
+
+			options.Lockout.MaxFailedAccessAttempts = 5;
+			options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromMinutes(1);
 		})
 		.AddEntityFrameworkStores<AppDbContext>()
 		.AddDefaultTokenProviders();

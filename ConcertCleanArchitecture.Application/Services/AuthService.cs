@@ -1,5 +1,7 @@
 ﻿using ConcertCleanArchitecture.Application.Dtos.Auth;
+using ConcertCleanArchitecture.Application.Dtos.Result;
 using ConcertCleanArchitecture.Application.Interfaces;
+using ConcertCleanArchitecture.Application.Validators;
 using ConcertCleanArchitecture.Domain.Entities;
 using ConcertCleanArchitecture.Domain.Interfaces;
 using Mapster;
@@ -15,25 +17,70 @@ internal class AuthService : IAuthService
 {
 	private readonly UserManager<ApplicationUser> _userManager;
 	private readonly RoleManager<IdentityRole<Guid>> _roleManager;
+	private readonly SignInManager<ApplicationUser> _signInManager;
 	private readonly IUnitOfWork _uow;
 	private readonly IConfiguration _configuration;
 
-	public AuthService(UserManager<ApplicationUser> userManager, RoleManager<IdentityRole<Guid>> roleManager, IConfiguration configuration, IUnitOfWork uow)
+	public AuthService(
+		UserManager<ApplicationUser> userManager,
+		RoleManager<IdentityRole<Guid>> roleManager,
+		SignInManager<ApplicationUser> signInManager,
+		IConfiguration configuration,
+		IUnitOfWork uow)
 	{
 		_userManager = userManager;
 		_roleManager = roleManager;
+		_signInManager = signInManager;
 		_uow = uow;
 		_configuration = configuration;
 	}
 
-	public async Task<string?> AuthenticateAsync(string email, string password)
+	public async Task<ResultDto> AuthenticateAsync(LoginQueryDto model)
 	{
-		var user = await _userManager.FindByEmailAsync(email);
-		if (user is null || !await _userManager.CheckPasswordAsync(user, password))
+		var user = await _userManager.FindByEmailAsync(model.UserNameOrEmail);
+
+		if (user is null)
 		{
-			return null;
+			user = await _userManager.FindByNameAsync(model.UserNameOrEmail);
 		}
-		return await GenerateJwtToken(user);
+
+		if (user is null)
+		{
+			return new ResultDto { Message = "User was not found." };
+		}
+
+		var result = await _signInManager.CheckPasswordSignInAsync(user, model.Password, true);
+
+		if (result.IsLockedOut)
+		{
+			TimeSpan? timeSpan = user.LockoutEnd?.Subtract(DateTime.UtcNow);
+			if (timeSpan.HasValue && timeSpan.Value.TotalMinutes > 0)
+			{
+				return new ResultDto
+				{
+					Message = $"Your account has been locked out for {timeSpan.Value.TotalSeconds:N0} seconds due to multiple unsuccessful login attempts. Please try again later."
+				};
+			}
+		}
+
+		if (result.IsNotAllowed)
+		{
+			return new ResultDto
+			{
+				Message = "Login is not allowed. Please check your email and complete the verification process."
+			};
+		}
+
+		if (!result.Succeeded)
+		{
+			return new ResultDto { Message = "Invalid credentials" };
+		}
+
+		return new ResultDataDto<dynamic>
+		{
+			Data = new { Token = "Generated Token" },
+			Message = "Login successful",
+		};
 	}
 
 	private async Task<string> GenerateJwtToken(ApplicationUser user)

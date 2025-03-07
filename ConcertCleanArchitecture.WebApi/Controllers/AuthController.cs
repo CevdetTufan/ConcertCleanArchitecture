@@ -13,13 +13,13 @@ public class AuthController(IAuthService authService) : ControllerBase
 	[HttpPost("Login")]
 	public async Task<IActionResult> Login([FromBody] LoginQueryDto model)
 	{
-		var token = await _authService.AuthenticateAsync(model.UserName, model.Password);
-		if (string.IsNullOrWhiteSpace(token))
+		var token = await _authService.AuthenticateAsync(model);
+		if (!token.IsSuccess)
 		{
-			return Unauthorized("Invalid credentials");
+			return Unauthorized(token);
 		}
 
-		return Ok(new { Token = token });
+		return Ok(token);
 	}
 
 	[HttpPost("Register")]
